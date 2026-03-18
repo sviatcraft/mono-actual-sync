@@ -1,18 +1,13 @@
 services:
   mono-actual-sync:
-    build: .
+    image: ghcr.io/sviatcraft/mono-actual-sync:latest
     container_name: mono-actual-sync
     ports:
-      # Bind to localhost so the UI/API aren't exposed to your LAN by default.
-      # If you *want* LAN access, change this back to "3000:3000".
-      - "127.0.0.1:3000:3000"
+      - "3000:3000"
     environment:
       PORT: "3000"
-      # Optional: set your timezone so imported transaction dates match your local day boundary.
-      # Examples: "Europe/Kyiv", "UTC"
       TZ: "Europe/Kyiv"
     volumes:
-      # Persists encrypted config.json and Actual API cache across restarts
       - mono_actual_sync_data:/app/backend/data
     restart: unless-stopped
 
