@@ -1,0 +1,17 @@
+{
+  "name": "mono-actual-sync-backend",
+  "version": "0.0.1",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "type": "commonjs",
+  "dependencies": {
+    "@actual-app/api": "^26.3.0",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "node-cron": "^4.2.1",
+    "zod": "^4.1.5"
+  }
+}
