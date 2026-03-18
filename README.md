@@ -4,9 +4,9 @@ Self-hosted web UI that syncs transactions from **Monobank** into an **Actual Bu
 
 The goal is “start it, open the UI, configure, sync” — no env-var juggling required for normal use. 
 
-## Quickstart (Pre-built Docker Image)
+## Quickstart (Standard Docker)
 
-The easiest way to run the app is using the pre-built Docker image from the GitHub Container Registry.
+The easiest way to run the app is using the pre-built Docker image from the GitHub Container Registry. *(If you are using CasaOS, skip to the CasaOS section below).*
 
 ### 1) Prerequisites
 - Docker with `docker compose`
@@ -28,6 +28,7 @@ services:
       # Set your timezone so imported transaction dates match your local day boundary.
       TZ: "Europe/Kyiv"
     volumes:
+      # Standard Docker named volume
       - mono_actual_sync_data:/app/backend/data
     restart: unless-stopped
 
@@ -45,23 +46,47 @@ Open `http://localhost:9191` (or your server's IP if you changed the port mappin
 
 ## CasaOS Installation
 
-This app supports native CasaOS App Store integration via an `x-casaos` metadata block included in `docker-compose.yml`.
+This app supports native CasaOS integration. The easiest way to install it is to import the custom configuration below, which automatically handles the app icon, web UI routing, and saves your configuration directly to your CasaOS `AppData` folder.
 
-**Option A — Import via the CasaOS UI (recommended):**
+**Installation Steps:**
 
 1. Open your CasaOS Dashboard.
 2. Click the **+** icon and select **Install a customized app**.
 3. Click the **Import** button in the top right.
-4. Paste the `docker-compose.yml` code from the Quickstart section above (the `x-casaos` block is included and will be picked up automatically).
-5. Click **Install**.
+4. Paste the following code into the import window:
 
-**Option B — Manual customized app (fallback):**
+```yaml
+services:
+  mono-actual-sync:
+    image: ghcr.io/sviatcraft/mono-actual-sync:latest
+    container_name: mono-actual-sync
+    ports:
+      - "9191:9191"
+    environment:
+      PORT: "9191"
+      TZ: "Europe/Kyiv"
+    volumes:
+      # CasaOS-specific bind mount for easy file access
+      - /DATA/AppData/mono-actual-sync:/app/backend/data
+    restart: unless-stopped
 
-1. Open your CasaOS Dashboard.
-2. Click the **+** icon and select **Install a customized app**.
-3. Fill in the fields manually (image, port `9191`, volume, etc.).
-4. *(Optional)* Set the **Web UI port** to `9191` so the app appears correctly in the dashboard.
-5. Click **Install**.
+x-casaos:
+  architectures:
+    - amd64
+    - arm64
+  main: "mono-actual-sync"
+  title:
+    en_us: "Mono Actual Sync"
+  tagline:
+    en_us: "Monobank to Actual Budget Bridge"
+  developer: "sviatcraft"
+  author: "sviatcraft"
+  icon: "[https://raw.githubusercontent.com/sviatcraft/mono-actual-sync/main/frontend/public/favicon.svg](https://raw.githubusercontent.com/sviatcraft/mono-actual-sync/main/frontend/public/favicon.svg)"
+  category: "Finance"
+  port_map: "9191"
+  index: "/"
+```
+5. Click **Submit**, ensure the visual fields are populated, and then click **Install**.
 
 ---
 
@@ -85,11 +110,10 @@ Once the app is running, open the web UI:
 
 ## Data persistence + encryption (automatic)
 
-- Configuration is saved to `backend/data/config.json` (encrypted at rest).
-- The encryption key is stored alongside it in `backend/data/.encryption_key`.
-- In Docker, the compose volume `mono_actual_sync_data` persists both files across restarts.
-
-**Backup tip:** back up `config.json` and `.encryption_key` together — losing the key means the config can’t be decrypted.
+- Configuration is saved to the `/data` folder (encrypted at rest).
+- The encryption key is stored alongside it in `.encryption_key`.
+- **CasaOS Users:** You can easily back up these files by opening the CasaOS **Files** app and navigating to `AppData/mono-actual-sync`.
+- **Backup tip:** back up `config.json` and `.encryption_key` together — losing the key means the config can’t be decrypted.
 
 ## Common setup gotcha: Actual server URL from Docker
 
@@ -114,7 +138,7 @@ The Actual `Server URL` must be reachable **from inside the container**.
 If you prefer to build the Docker image locally instead of using the pre-built registry image:
 
 ```bash
-git clone https://github.com/sviatcraft/mono-actual-sync.git
+git clone [https://github.com/sviatcraft/mono-actual-sync.git](https://github.com/sviatcraft/mono-actual-sync.git)
 cd mono-actual-sync
 docker compose -f docker-compose.dev.yml up --build -d
 ```
