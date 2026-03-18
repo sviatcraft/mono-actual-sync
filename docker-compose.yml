@@ -3,9 +3,9 @@ services:
     image: ghcr.io/sviatcraft/mono-actual-sync:latest
     container_name: mono-actual-sync
     ports:
-      - "3000:3000"
+      - "9191:9191"
     environment:
-      PORT: "3000"
+      PORT: "9191"
       TZ: "Europe/Kyiv"
     volumes:
       - mono_actual_sync_data:/app/backend/data
@@ -13,3 +13,26 @@ services:
 
 volumes:
   mono_actual_sync_data:
+
+# --- CasaOS App Store Metadata ---
+x-casaos:
+  architectures:
+    - amd64
+    - arm64
+  main: "mono-actual-sync"
+  description:
+    en_us: "Self-hosted web UI that syncs transactions from Monobank into an Actual Budget server. Set it up once, map your accounts, and easily keep your budget up to date with manual or hourly background syncs."
+  tagline:
+    en_us: "Bridge Monobank to Actual Budget"
+  developer: "sviatcraft"
+  author: "sviatcraft"
+  icon: "https://raw.githubusercontent.com/sviatcraft/mono-actual-sync/main/frontend/public/favicon.svg" 
+  thumbnail: ""
+  title:
+    en_us: "Mono Actual Sync"
+  category: "Finance"
+  port_map: "9191"
+  index: "/"
+  tips:
+    before_install:
+      en_us: "You will need your Monobank Personal Token and an existing Actual Budget server (URL, Password, and Sync ID) to configure this app after installation."

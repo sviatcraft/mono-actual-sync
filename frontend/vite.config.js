@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       // Local dev convenience: keep frontend calling `/api/*` and proxy to Express.
-      '/api': 'http://localhost:3000',
+      '/api': 'http://localhost:9191',
     },
   },
 })

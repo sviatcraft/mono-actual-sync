@@ -22,9 +22,9 @@ services:
     image: ghcr.io/sviatcraft/mono-actual-sync:latest
     container_name: mono-actual-sync
     ports:
-      - "3000:3000"
+      - "9191:9191"
     environment:
-      PORT: "3000"
+      PORT: "9191"
       # Set your timezone so imported transaction dates match your local day boundary.
       TZ: "Europe/Kyiv"
     volumes:
@@ -39,22 +39,29 @@ Run the following command in the same directory:
 ```bash
 docker compose up -d
 ```
-Open `http://localhost:3000` (or your server's IP if you changed the port mapping).
+Open `http://localhost:9191` (or your server's IP if you changed the port mapping).
 
 ---
 
 ## CasaOS Installation
 
-This app is designed to run on CasaOS. 
+This app supports native CasaOS App Store integration via an `x-casaos` metadata block included in `docker-compose.yml`.
+
+**Option A — Import via the CasaOS UI (recommended):**
 
 1. Open your CasaOS Dashboard.
 2. Click the **+** icon and select **Install a customized app**.
 3. Click the **Import** button in the top right.
-4. Paste the `docker-compose.yml` code from the Quickstart section above.
-5. *(Optional)* To get the app to appear correctly in your dashboard UI, you can manually set the **Web UI port** to `3000` in the CasaOS visual settings before clicking Install.
-6. Click **Install**. 
+4. Paste the `docker-compose.yml` code from the Quickstart section above (the `x-casaos` block is included and will be picked up automatically).
+5. Click **Install**.
 
-*(Note: Full native CasaOS App Store integration via an `x-casaos` config block is planned for the future).*
+**Option B — Manual customized app (fallback):**
+
+1. Open your CasaOS Dashboard.
+2. Click the **+** icon and select **Install a customized app**.
+3. Fill in the fields manually (image, port `9191`, volume, etc.).
+4. *(Optional)* Set the **Web UI port** to `9191` so the app appears correctly in the dashboard.
+5. Click **Install**.
 
 ---
 
@@ -72,9 +79,9 @@ Once the app is running, open the web UI:
 ## Important security note (read before exposing)
 
 - There is currently **no login / authentication** for `/api/*`.
-- The default configuration binds to `0.0.0.0:3000`, making the UI/API reachable from your LAN.
+- The default configuration binds to `0.0.0.0:9191`, making the UI/API reachable from your LAN.
 - Anyone on the same network who can reach the service can read decrypted config (including tokens) and trigger syncs. **Do not expose this port to the public internet.**
-- To restrict access to localhost only, change the port mapping to `"127.0.0.1:3000:3000"`.
+- To restrict access to localhost only, change the port mapping to `"127.0.0.1:9191:9191"`.
 
 ## Data persistence + encryption (automatic)
 
@@ -131,7 +138,7 @@ npm install
 npm run dev
 ```
 
-Open the Vite dev server URL (usually `http://localhost:5173`). In dev, Vite proxies `/api` → `http://localhost:3000` (see `frontend/vite.config.js`).
+Open the Vite dev server URL (usually `http://localhost:5173`). In dev, Vite proxies `/api` → `http://localhost:9191` (see `frontend/vite.config.js`).
 
 ---
 
@@ -157,5 +164,5 @@ Rate limiting:
 ## Status / roadmap
 
 - [x] Publish pre-built Docker image to GHCR.
-- [ ] Add `x-casaos` metadata for true 1-click CasaOS App Store integration.
+- [x] Add `x-casaos` metadata for true 1-click CasaOS App Store integration.
 - [ ] Add optional app-level authentication for `/api/*` (e.g. `APP_TOKEN` / Basic Auth)

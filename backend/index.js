@@ -31,7 +31,7 @@ process.on('uncaughtException', (err) => {
 const { sync, fetchAccountsData, isSyncing, getSyncProgress } = require('./monobankService.js');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 9191;
 
 /**
  * CORS — disabled by default (same-origin).

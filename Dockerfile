@@ -32,7 +32,7 @@ FROM node:20-alpine AS runtime
 WORKDIR /app
 
 ENV NODE_ENV=production
-ENV PORT=3000
+ENV PORT=9191
 ENV TZ=UTC
 
 # Install timezone database so `TZ=Area/City` works as expected (dates matter for transaction import).
@@ -47,6 +47,6 @@ COPY --from=frontend-build /app/frontend/dist ./backend/public
 # Persisted config + Actual API cache live under `backend/data`
 VOLUME ["/app/backend/data"]
 
-EXPOSE 3000
+EXPOSE 9191
 
 CMD ["node", "backend/index.js"]
